@@ -26,4 +26,21 @@ if (!raining) {
   console.log("Leave your umbrella at home!");
 }
 
+const whichSchool  = function (age) {
+  
+  // Your code in here ...
+  if (age < 13) {
+    return "Elementary School";
+  }
+
+  if (age >= 13 && age < 18) {
+    return "Secondary School";
+  }
+ 
+  if (age > 18) {
+    return "Lighthouse Labs";
+  }
+  console.log(whichSchool(12)); 
+}
+
 
