@@ -1,0 +1,1 @@
+SELECT ID, NAME, EMAIL, PASSWORD FROM users WHERE email = 'tristanjacobs@gmail.com';

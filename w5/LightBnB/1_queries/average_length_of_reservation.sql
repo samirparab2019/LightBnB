@@ -1,0 +1,1 @@
+SELECT AVG(end_date - start_date) AS avg_length_of_reservation FROM reservations;
