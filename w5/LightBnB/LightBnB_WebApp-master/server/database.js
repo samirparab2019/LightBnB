@@ -1,6 +1,11 @@
 const properties = require('./json/properties.json');
 const users = require('./json/users.json');
+
+
+//const db = require('./db.js');
 const { Pool } = require('pg');
+
+
 
 const pool = new Pool({
   user: 'vagrant',
@@ -10,24 +15,11 @@ const pool = new Pool({
 });
 
 /// Users
-
 /**
  * Get a single user from the database given their email.
  * @param {String} email The email of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-// const getUserWithEmail = function(email) {
-//   let user;
-//   for (const userId in users) {
-//     user = users[userId];
-//     if (user.email.toLowerCase() === email.toLowerCase()) {
-//       break;
-//     } else {
-//       user = null;
-//     }
-//   }
-//   return Promise.resolve(user);
-// }
 
 const getUserWithEmail = function(email) {
   return pool.query(`
@@ -110,24 +102,26 @@ const getAllProperties = function(options, limit = 10) {
   FROM properties
   JOIN property_reviews ON properties.id = property_id
   `;
+  
+let queryStringNew = "";
 
-  // 3
   if (options.city) {
     queryParams.push(`%${options.city}%`);
-    queryString += `WHERE city LIKE $${queryParams.length} `;
+    queryStringNew += `WHERE city LIKE $${queryParams.length} `;
   }
 
   if (options.owner_id) {
     queryParams.push(options.owner_id);
-    queryString += ` AND owner_id = $${queryParams.length}`;
+    queryStringNew += ` AND owner_id = $${queryParams.length}`;
   }
   
   if (options.minimum_price_per_night && options.maximum_price_per_night) {
     queryParams.push(parseInt(options.minimum_price_per_night));
-    queryString += ` AND cost_per_night >= $${queryParams.length}`;
+    queryStringNew += ` AND cost_per_night >= $${queryParams.length}`;
     queryParams.push(parseInt(options.maximum_price_per_night));
-    queryString += ` AND cost_per_night <= $${queryParams.length}`;
+    queryStringNew += ` AND cost_per_night <= $${queryParams.length}`;
   }
+  queryString += queryStringNew.replace(/^(\s+AND)/, ' WHERE');
   
   //4
   queryString += ` GROUP BY properties.id `;
@@ -140,9 +134,10 @@ const getAllProperties = function(options, limit = 10) {
   LIMIT $${queryParams.length};
   `;
 
+  
   // 5
-  console.log(queryString, queryParams);
-
+  //console.log(queryString, queryParams);
+  
   // 6
   return pool.query(queryString, queryParams)
   .then(res => res.rows);
@@ -169,7 +164,3 @@ const addProperty = function(property) {
 
 }
 exports.addProperty = addProperty;
-
-
-
-
